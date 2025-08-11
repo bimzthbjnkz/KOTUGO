@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReviewDriver from '../components/ReviewDriver';
 import SummaryCard from '../components/SummaryCard';
 import NextButton from '../components/NextButton';
@@ -6,6 +7,7 @@ import NextButton from '../components/NextButton';
 const PassanPage: React.FC = () => {
   const [eta, setEta] = useState('5 menit');
   const [seatsAvailable, setSeatsAvailable] = useState(3);
+  const navigate = useNavigate(); // Inisialisasi hook
   
   // Data dummy
   const route = 'Kalapa - Dago';
@@ -33,7 +35,7 @@ const PassanPage: React.FC = () => {
       
       <ReviewDriver />
       
-      <NextButton onClick={() => console.log('Lanjut ke halaman berikutnya')} />
+      <NextButton onClick={() => navigate('/end')} />
     </div>
   );
 };
