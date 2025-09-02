@@ -1,45 +1,36 @@
-import React, { useState } from 'react';
-import BaseButton from './BaseButton';
+// src/components/RouteSelector.tsx
+import React from 'react';
 
-interface RouteSelectProps {
+interface RouteSelectorProps {
+  selectedRoute: string;
   onRouteSelect: (route: string) => void;
 }
 
-const RouteSelect: React.FC<RouteSelectProps> = ({ onRouteSelect }) => {
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  
-  const routes = [
+const RouteSelect: React.FC<RouteSelectorProps> = ({ selectedRoute, onRouteSelect }) => {
+  // Daftar rute angkot yang tersedia
+  const availableRoutes = [
     'Kalapa - Dago',
-    'Caheum - Ledeng',
-    'Ledeng - Cimahi'
+    // 'Caheum - Ledeng',  // Dikomen dulu sesuai permintaan
+    // 'Ledeng - Cimahi'   // Dikomen dulu sesuai permintaan
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Pilih Rute Angkot</h2>
-      
-      <div className="space-y-4 mb-8">
-        {routes.map((route) => (
+    <div className="bg-gray-100 rounded-2xl p-6 shadow-neomorph">
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Pilih Rute Angkot</h3>
+      <div className="space-y-3">
+        {availableRoutes.map((route) => (
           <div 
             key={route}
-            onClick={() => setSelectedRoute(route)}
+            onClick={() => onRouteSelect(route)}
             className={`p-4 rounded-xl cursor-pointer transition-all
               ${selectedRoute === route 
                 ? 'bg-blue-100 border-2 border-blue-400 shadow-inner' 
-                : 'bg-gray-100 hover:bg-gray-200 shadow-neomorph'}`}
+                : 'bg-gray-200 hover:bg-gray-300 shadow-neomorph'}`}
           >
             <p className="font-medium text-gray-800">{route}</p>
           </div>
         ))}
       </div>
-      
-      <BaseButton 
-        onClick={() => selectedRoute && onRouteSelect(selectedRoute)}
-        disabled={!selectedRoute}
-        className={`w-full ${selectedRoute ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-500'}`}
-      >
-        Konfirmasi Rute
-      </BaseButton>
     </div>
   );
 };

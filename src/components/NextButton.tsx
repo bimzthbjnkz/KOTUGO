@@ -19,4 +19,4 @@ const NextButton: React.FC<NextButtonProps> = ({ onClick, disabled = false }) =>
   );
 };
 
-export default NextButton;
+export default NextButton;  

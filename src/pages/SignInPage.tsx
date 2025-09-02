@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BaseButton from '../components/BaseButton';
+import DropdownSelect from '../components/DropdownSelect'; // Import komponen dropdown
 
 const SignPage: React.FC = () => {
   const location = useLocation();
@@ -11,12 +12,26 @@ const SignPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    plateNumber: ''
+    plateNumber: '',
+    route: '' // Tambah state untuk rute
   });
+
+  // Daftar rute yang tersedia
+  const availableRoutes = [
+    'Kalapa - Dago',
+    'Caheum - Ledeng',
+    'Ledeng - Cimahi',
+    'Cicaheum - Cibiru',
+    'Stasiun Hall - Leuwi Panjang'
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRouteSelect = (route: string) => {
+    setFormData(prev => ({ ...prev, route }));
   };
 
   // Validasi format plat nomor Indonesia
@@ -25,24 +40,36 @@ const SignPage: React.FC = () => {
     return regex.test(plate);
   };
 
+  const validateForm = (): boolean => {
+    if (role === 'driver') {
+      if (!validatePlateNumber(formData.plateNumber)) {
+        alert('Format plat nomor tidak valid. Contoh: B 1234 ABC');
+        return false;
+      }
+      if (!formData.route) {
+        alert('Silakan pilih rute angkot');
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validasi khusus untuk supir
-    if (role === 'driver' && !validatePlateNumber(formData.plateNumber)) {
-      alert('Format plat nomor tidak valid. Contoh: B 1234 ABC');
-      return;
-    }
+    if (!validateForm()) return;
 
-    // Simpan data plat nomor ke localStorage jika supir
+    // Simpan data ke localStorage jika supir
     if (role === 'driver') {
       localStorage.setItem('angkotPlateNumber', formData.plateNumber);
+      localStorage.setItem('angkotRoute', formData.route);
     }
 
-    // Navigasi dengan membawa state plat nomor
+    // Navigasi dengan membawa state
     navigate(role === 'driver' ? '/driver' : '/passenger', {
       state: {
         plateNumber: role === 'driver' ? formData.plateNumber : null,
+        route: role === 'driver' ? formData.route : null,
         userData: {
           name: formData.name,
           phone: formData.phone
@@ -84,21 +111,33 @@ const SignPage: React.FC = () => {
         
         {/* Tambahan field khusus untuk supir */}
         {role === 'driver' && (
-          <div>
-            <label className="block text-gray-700 mb-2">Plat Nomor Angkot</label>
-            <input
-              type="text"
-              name="plateNumber"
-              value={formData.plateNumber}
-              onChange={handleChange}
-              required
-              placeholder="Contoh: B 1234 ABC"
-              className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Format: Huruf daerah, nomor polisi, dan kode akhir (contoh: B 1234 ABC)
-            </p>
-          </div>
+          <>
+            <div>
+              <label className="block text-gray-700 mb-2">Plat Nomor Angkot</label>
+              <input
+                type="text"
+                name="plateNumber"
+                value={formData.plateNumber}
+                onChange={handleChange}
+                required
+                placeholder="Contoh: B 1234 ABC"
+                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Format: Huruf daerah, nomor polisi, dan kode akhir (contoh: B 1234 ABC)
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Rute Angkot</label>
+              <DropdownSelect
+                options={availableRoutes}
+                selectedOption={formData.route}
+                onSelect={handleRouteSelect}
+                placeholder="Pilih rute angkot"
+              />
+            </div>
+          </>
         )}
         
         <BaseButton 
